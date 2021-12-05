@@ -37,7 +37,7 @@ public class Entry implements Serializable{
 	}
 	
 	public void newCar(String tbrand, String tmodel, String ttype, int tyear, ArrayList<String>ttags) {
-		cars.add(count, new car(count, tbrand, tmodel, ttype,tyear,ttags, idnum));
+		cars.add(new car(count, tbrand, tmodel, ttype,tyear,ttags, idnum));
 		count++;
 	}
 	
@@ -49,6 +49,7 @@ public class Entry implements Serializable{
 	}
 	public void sellcar(int tindex) {
 		sold.add(cars.get(tindex));
+	
 		cars.remove(tindex);
 	}
 	

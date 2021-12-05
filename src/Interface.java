@@ -21,9 +21,7 @@ import java.util.ArrayList;
  */
 public class Interface {
 	//variables
-	int recent[];
-	//list of recent car ID's
-	int userrecent[]; //list of recent user id's , only used by staff/admin
+
 	
 	int status;
 	String pwhash;
@@ -94,9 +92,9 @@ public class Interface {
 		store.get(seller).cars.get(car).settag(ttags);
 	}
 	
-	public void logout() {
-		return;
-	}
+	//public void logout() {
+	//	return;
+	//}
 	
 	public void remUser(String tID) throws IOException {
 		store.remUser(tID);
@@ -110,5 +108,7 @@ public class Interface {
 	public boolean duplicateID(String tID) {
 		return store.idcheck(tID);
 	}
-	
+	public ArrayList<String> getusers(){
+		return store.getusers();
+	}
 }
