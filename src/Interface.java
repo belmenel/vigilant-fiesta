@@ -1,15 +1,14 @@
 import java.io.IOException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
 /*
  * 
- * The UI. Either as a command line/javaGui, or this will hook into the web interface.
+ * The UI. Either as a command line/javaGui. All the calls made by the GUI should call on this.
+ * Class to act as an in-between for the database and the user interface.
  * 
- * 
- * 
- * 
- * 
+ * added a hash method to help readability.
  * 
  * 
  * 
@@ -75,8 +74,8 @@ public class Interface {
 	return temp;
 	}
 	
-	public void list(String tbrand, String tmodel, String ttype, int tyear, ArrayList<String>ttags, String tID) throws IOException {
-		store.get(tID).newCar(tbrand, tmodel,ttype,tyear,ttags);
+	public void list(String tbrand, String tmodel, String ttype, int tyear, ArrayList<String>ttags, String tID,int tprice, String tvin, int tmiles) throws IOException {
+		store.get(tID).newCar(tbrand, tmodel,ttype,tyear,ttags,tprice,tvin,tmiles);
 		store.write();
 	}
 	
@@ -92,9 +91,12 @@ public class Interface {
 		store.get(seller).cars.get(car).settag(ttags);
 	}
 	
-	//public void logout() {
-	//	return;
-	//}
+	// call this, then call the constructor +  login again. 
+	public void save() throws IOException {
+		store.write();
+	}
+	
+	
 	
 	public void remUser(String tID) throws IOException {
 		store.remUser(tID);
@@ -111,4 +113,32 @@ public class Interface {
 	public ArrayList<String> getusers(){
 		return store.getusers();
 	}
+	
+	
+	//simple hash method. Can use different, if done in the gui.
+	public String hash(String dfPW) throws NoSuchAlgorithmException {
+		/* MessageDigest instance for MD5. */
+		MessageDigest m = MessageDigest.getInstance("MD5");
+
+		/* Add plain-text password bytes to digest using MD5 update() method. */
+		m.update(dfPW.getBytes());
+
+		/* Convert the hash value into bytes */
+		byte[] bytes = m.digest();
+
+		/*
+		 * The bytes array has bytes in decimal form. Converting it into hexadecimal
+		 * format.
+		 */
+		StringBuilder s = new StringBuilder();
+		for (int i = 0; i < bytes.length; i++) {
+			s.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+		}
+
+		/* Complete hashed password in hexadecimal format */
+		String dfhPW = s.toString();
+		
+		return dfhPW;
+	}
+	
 }

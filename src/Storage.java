@@ -1,7 +1,7 @@
 /*
  *		Storage Class 
  * 
- * 
+ * Handles the database. All saving/loading is done here, as well as the actual database object.
  * 
  * 
  * 
@@ -36,6 +36,11 @@ public class Storage {
 		//if(!Files.exists(file1)){
 			//Files.createFile(file1);
 			//Files.createFile(file2);
+		
+		/*this bit sets up the database objects, or loads them if they already exist.
+		 *  If it needs to create them, it also sets up an admin account, that can be used for initial setup.
+		 */
+		
 		
 			mainlist = new LinkedList<Entry>();
 			users = new ArrayList<String>();
@@ -79,6 +84,8 @@ public class Storage {
 	
 		
 
+	
+	
 		
 
 	public void addUser(String tID, String tPW, int ttype) throws IOException {

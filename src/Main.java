@@ -1,7 +1,7 @@
 
 /*
- * 		Main. Will start everything up~ Also contains a basic interface. 
- * 
+ * 		Main. Will start everything up~ Also contains a basic interface for feature testing and such. 
+ * Password hashing is handled here, but theres a built-in hash method in interface.
  * 
  * 
  * 
@@ -20,6 +20,8 @@ public class Main {
 
 	public static void main(String[] args) throws IOException, NoSuchAlgorithmException, ClassNotFoundException {
 
+		
+		//Variables. 
 		boolean again = false;
 		boolean valid = false;
 		Interface inter = new Interface();
@@ -37,7 +39,12 @@ public class Main {
 		ArrayList<car> results;
 		ArrayList<String> tags = new ArrayList<String>();
 		ArrayList<Integer> tagtype = new ArrayList<Integer>();
+		//int price;
+		//String vin;
+		//int miles;
 
+		//Login Menu
+		
 		System.out.println(
 				"Welcome to the CarLot. Please Login or create an account. admin/admin for default admin account.");
 		System.out.println("1: Login, 2: create new user, 3: quit");
@@ -53,6 +60,19 @@ public class Main {
 			if (selection == 3)
 				return;
 		}
+		/*
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * Create new user. 
+		 * 
+		 * 
+		 * 
+		 * 
+		 */
+
 
 		if (selection == 2) {
 
@@ -67,26 +87,7 @@ public class Main {
 			System.out.println("Please select a password");
 			rPW = in.next();
 
-			/* MessageDigest instance for MD5. */
-			MessageDigest m = MessageDigest.getInstance("MD5");
-
-			/* Add plain-text password bytes to digest using MD5 update() method. */
-			m.update(rPW.getBytes());
-
-			/* Convert the hash value into bytes */
-			byte[] bytes = m.digest();
-
-			/*
-			 * The bytes array has bytes in decimal form. Converting it into hexadecimal
-			 * format.
-			 */
-			StringBuilder s = new StringBuilder();
-			for (int i = 0; i < bytes.length; i++) {
-				s.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
-			}
-
-			/* Complete hashed password in hexadecimal format */
-			hPW = s.toString();
+			hPW = inter.hash(rPW);
 
 			inter.newuser(ID, hPW, 1);
 			inter.login(ID, hPW);
@@ -94,7 +95,17 @@ public class Main {
 			status = 1;
 
 		}
-
+		
+		
+		
+		/*
+		 * 
+		 * 
+		 * Login section
+		 * 
+		 * 
+		 * 
+		 */
 		if (selection == 1) {
 			while (!valid) {
 				System.out.println("Username:");
@@ -102,26 +113,7 @@ public class Main {
 				System.out.println("Password:");
 				rPW = in.next();
 
-				/* MessageDigest instance for MD5. */
-				MessageDigest m = MessageDigest.getInstance("MD5");
-
-				/* Add plain-text password bytes to digest using MD5 update() method. */
-				m.update(rPW.getBytes());
-
-				/* Convert the hash value into bytes */
-				byte[] bytes = m.digest();
-
-				/*
-				 * The bytes array has bytes in decimal form. Converting it into hexadecimal
-				 * format.
-				 */
-				StringBuilder s = new StringBuilder();
-				for (int i = 0; i < bytes.length; i++) {
-					s.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
-				}
-
-				/* Complete hashed password in hexadecimal format */
-				hPW = s.toString();
+				hPW = inter.hash(rPW);
 
 				if (inter.duplicateID(ID)) {
 					valid = inter.login(ID, hPW);
@@ -134,6 +126,8 @@ public class Main {
 
 				}
 			}
+			
+			//label for user type.
 			status = inter.status();
 			switch (status) {
 			case 0:
@@ -156,16 +150,24 @@ public class Main {
 			boolean active = true;
 			selection = 0;
 
+			
+			
+			/*
+			 * Top Menu 
+			 * 
+			 * 
+			 */
 			while (active) {
 
 				System.out.println("Top Menu  :  Make Selection with numbers  :  " + atype);
 
 				System.out.println("1:Search Listings");
+				System.out.println("2:Change Password");
 				if (status > 1) {
-					System.out.println("2:My Listings");
+					System.out.println("3:My Listings");
 				}
 				if (status > 2) {
-					System.out.println("3: ADMIN PANEL");
+					System.out.println("4: ADMIN PANEL");
 				}
 				System.out.println("0:Quit");
 
@@ -176,6 +178,13 @@ public class Main {
 					System.out.println("Invalid selection. Try again.");
 				}
 
+				
+				/*
+				 * 
+				 * Search option
+				 * 
+				 * 
+				 */
 				if (selection == 0)
 					active = false;
 				do{
@@ -280,7 +289,43 @@ public class Main {
 					}
 				}while(again);
 				
-				while (selection == 2 && status > 1) {
+				
+				
+				/*
+				 * 
+				 * 
+				 * Password Change
+				 * 
+				 * 
+				 * 
+				 */
+				
+				
+				if(selection == 2) {
+					System.out.println("Enter New Password, or enter a space to cancel.");
+					intemp = in.next();
+					if(intemp == " ") {
+						selection = 0;
+					}else {
+						inter.user.setPW(inter.hash(intemp));
+					}
+					
+				}
+				
+				
+				
+				
+				
+				
+				
+				/*
+				 * 
+				 * 
+				 * My Listings
+				 * 
+				 * 
+				 */
+				while (selection == 3 && status > 1) {
 					System.out.println("Current Listings: ");
 
 					for (int i = 0; i < inter.user.getcars().size(); i++) {
@@ -308,12 +353,40 @@ public class Main {
 							String model = in.next();
 							System.out.println("Enter Type:");
 							String type = in.next();
+							System.out.println("Enter VIN:");
+							String vin = in.next();
 							System.out.println("Enter Year:");
 							int year;
 							while (true) {
 								intemp = in.next();
 								try {
 									year = Integer.parseInt(intemp);
+
+									break;
+
+								} catch (NumberFormatException e) {
+									System.out.println("Invalid selection. Try again.");
+								}
+							}
+							System.out.println("Enter Milage:");
+							int miles;
+							while (true) {
+								intemp = in.next();
+								try {
+									miles = Integer.parseInt(intemp);
+
+									break;
+
+								} catch (NumberFormatException e) {
+									System.out.println("Invalid selection. Try again.");
+								}
+							}
+							System.out.println("Enter Price:");
+							int price;
+							while (true) {
+								intemp = in.next();
+								try {
+									price = Integer.parseInt(intemp);
 
 									break;
 
@@ -339,7 +412,7 @@ public class Main {
 								System.out.println("Enter Tag:");
 								atags.add(in.next());
 							}
-							inter.list(brand, model, type, year, atags, ID);
+							inter.list(brand, model, type, year, atags, ID, price, vin,  miles);
 
 						}
 
@@ -368,7 +441,7 @@ public class Main {
 						selection = 0;
 
 				}
-				while (selection == 3 && status == 3) {
+				while (selection == 4 && status == 3) {
 					String nID = "";
 					valid = false;
 					System.out.println("!ADMIN PANEL!  1:Add User  2: Remove User  3:List Users  4: Quit");
@@ -398,26 +471,7 @@ public class Main {
 						System.out.println("Password:");
 						String nrPW = in.next();
 
-						/* MessageDigest instance for MD5. */
-						MessageDigest m = MessageDigest.getInstance("MD5");
-
-						/* Add plain-text password bytes to digest using MD5 update() method. */
-						m.update(nrPW.getBytes());
-
-						/* Convert the hash value into bytes */
-						byte[] bytes = m.digest();
-
-						/*
-						 * The bytes array has bytes in decimal form. Converting it into hexadecimal
-						 * format.
-						 */
-						StringBuilder s = new StringBuilder();
-						for (int i = 0; i < bytes.length; i++) {
-							s.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
-						}
-
-						/* Complete hashed password in hexadecimal format */
-						String nhPW = s.toString();
+						String nhPW = inter.hash(nrPW);
 
 						System.out.println("User Type 1:user  2: staff 3: Admin");
 
@@ -450,12 +504,14 @@ public class Main {
 		in.close();
 
 	}
-
+//quick method to print out a cars details~ Should be the totext on cars, and will if I have time.
 	static void showcar(car car1) {
-		System.out.print(car1.year + " " + car1.brand + " " + car1.model + " " + car1.type + " : ");
+		System.out.print("$" + car1.price +" - " + car1.year + " " + car1.brand + " " + car1.model + " " + car1.type + " " + car1.getmiles() + " Miles : ");
 		for (int i = 0; i < car1.tags.size(); i++) {
 			System.out.print(car1.tags.get(i) + ", ");
+			
 		}
+		System.out.print(car1.getvin());
 		System.out.println(" ");
 	}
 }
